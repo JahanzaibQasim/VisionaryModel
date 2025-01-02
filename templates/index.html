@@ -800,19 +800,15 @@
   <script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
 
   <script>
-    function startModel() {
-      fetch('/start_model', {
-        method: 'POST',
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert(data.message);  // Show success message
-      })
-      .catch(error => {
-        alert('Error starting model');
-      });
-    }
-  </script>
+   function startModel() {
+    window.location.href = "/start-model";
+       }
+   </script>
+
+   <a href="#" onclick="startModel()">
+   <h3>Object Detection Model</h3>
+   </a>
+
   
 
 

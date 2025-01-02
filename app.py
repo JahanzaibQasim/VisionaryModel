@@ -1,54 +1,40 @@
-from flask import Flask, render_template, jsonify, Response
-import cv2
-from fer import FER
+from flask import Flask, render_template, redirect, url_for
+import subprocess
+import webbrowser
+import threading
+import os
 
 app = Flask(__name__)
 
-# Initialize Emotion Detection Model (or any model you want to connect)
-emotion_detector = FER(mtcnn=True)
-cap = cv2.VideoCapture(0)  # Webcam feed
+# Index Route (Main Page)
+@app.route("/")
+def index():
+    return render_template("index.html")
 
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/blog')
-def blog():
-    return render_template('blog.html')
-
-@app.route('/service-details')
-def service_details():
-    return render_template('service-details.html')
-
-# Start model when the user clicks the section
-@app.route('/start_model', methods=['POST'])
+# Route to Start Object Detection
+@app.route("/start-model")
 def start_model():
-    return jsonify({'message': 'Model started successfully!'})
+    def run_model():
+        # Use the subprocess to activate the virtual environment and run the script
+        command = [
+            "cmd.exe", "/c",  # Use cmd to run a series of commands
+            "E:\\PYTHON\\VisionaryModel\\VisionaryModel\\vm-od\\Scripts\\activate.bat && python object_detection_v2.py"
+        ]
+        # Start subprocess in the background
+        subprocess.Popen(command, shell=True)
 
-# Real-time video feed (streams webcam with model running)
-def generate_frames():
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
+    # Run the model in a separate thread to avoid blocking
+    threading.Thread(target=run_model).start()
 
-        # Emotion Detection (replace with your model's logic)
-        results = emotion_detector.detect_emotions(frame)
-        for face in results:
-            (x, y, w, h) = face["box"]
-            emotion = max(face["emotions"], key=face["emotions"].get)
-            cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    # Open object detection page in a new tab
+    webbrowser.open_new_tab(url_for("object_detection", _external=True))
 
-        _, buffer = cv2.imencode('.jpg', frame)
-        frame = buffer.tobytes()
+    return redirect(url_for("object_detection"))
 
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+# Route to Display Object Detection HTML Page
+@app.route("/object-detection")
+def object_detection():
+    return render_template("object_detection.html")
 
-# Route to display the live webcam feed
-@app.route('/video_feed')
-def video_feed():
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5555, debug=False)
