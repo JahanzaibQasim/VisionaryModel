@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Object Detection</title>
+    <title>Action Detection</title>
     <style>
         /* Center the loading spinner */
         .spinner-container {
@@ -64,7 +64,7 @@
 
     <!-- Video Feed -->
     <div class="video-container">
-        <img id="video-feed" src="/video_feed" alt="Loading video feed...">
+        <img id="video-feed" src="{{ url_for('video_feed') }}" alt="Loading video feed...">
     </div>
 
     <script>
@@ -76,6 +76,13 @@
             // Hide spinner and show video when feed is ready
             spinnerContainer.style.display = 'none';
             videoFeed.style.display = 'block';
+        };
+
+        // Reload page after 10 seconds to simulate loading time completion
+        window.onload = function() {
+            setTimeout(() => {
+                location.reload();  // Reload the page after 10 seconds
+            }, 10000); // 10-second delay
         };
     </script>
 </body>

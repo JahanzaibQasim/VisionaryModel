@@ -2,16 +2,24 @@ from flask import Flask, Response, render_template
 import cv2
 import torch
 import threading
+import time
 
 app = Flask(__name__)
 
-# Load YOLOv5 model globally
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
-print("Model Loaded")
-
-# Global variables for video capture
+# Global variables for video capture and loading state
 cap = cv2.VideoCapture(0)
-lock = threading.Lock()  # Prevent threading conflicts
+lock = threading.Lock()
+model_loaded = False
+
+# Load YOLOv5 model globally (with delay for loading animation)
+def load_model():
+    global model_loaded, model
+    time.sleep(10)  # Simulate loading time
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    model_loaded = True
+    print("Model Loaded")
+
+threading.Thread(target=load_model).start()  # Load model in a separate thread
 
 
 # Video Frame Generator
@@ -42,6 +50,9 @@ def index():
 
 @app.route('/video_feed')
 def video_feed():
+    if not model_loaded:
+        # Show loading animation if model isn't ready
+        return render_template('od_loading.html')
     return Response(generate_frames(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
