@@ -1,25 +1,14 @@
-from flask import Flask, Response, render_template, jsonify
+from flask import Flask, Response, render_template
 import cv2
 from deepface import DeepFace
 import numpy as np
-import threading
-import time
 
 app = Flask(__name__)
 
+# Initialize webcam
 cap = cv2.VideoCapture(0)
-model_loaded = False
 
-# Simulate model loading (takes time to load DeepFace model)
-def load_model():
-    global model_loaded
-    time.sleep(8)  # Simulate loading time (adjust as needed)
-    model_loaded = True
-    print("Emotion Detection Model Loaded")
-
-# Load model in a separate thread
-threading.Thread(target=load_model).start()
-
+# Emotion Detection Logic
 def detect_emotion(frame):
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     try:
@@ -39,7 +28,7 @@ def detect_emotion(frame):
 
     return frame
 
-# Video Frame Generator
+# Generate Video Frames
 def generate_frames():
     while True:
         success, frame = cap.read()
@@ -53,20 +42,16 @@ def generate_frames():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+# Flask Routes
 @app.route('/')
 def index():
     return render_template('emotion_detection.html')
 
 @app.route('/video_feed')
 def video_feed():
-    if not model_loaded:
-        return Response(b"Model is still loading...", status=503)
     return Response(generate_frames(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/check_model')
-def check_model():
-    return jsonify({'model_loaded': model_loaded})
-
+# Main
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5003, debug=False)
