@@ -397,21 +397,22 @@
 
 
           <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="400">
-            <div class="service-item">
-              <div class="img">
-                <img src="assets/img/services-3.jpg" class="img-fluid" alt="">
-              </div>
-              <div class="details position-relative">
-                <div class="icon">
-                  <i class="bi bi-easel"></i>
-                </div>
-                <a href="service-details.html" class="stretched-link">
-                  <h3>Emotion Detection Model</h3>
-                </a>
-                <p>Ut excepturi voluptatem nisi sed. Quidem fuga consequatur. Minus ea aut. Vel qui id voluptas adipisci eos earum corrupti.</p>
-              </div>
+    		<div class="service-item">
+        	<div class="img">
+            	<img src="assets/img/services-3.jpg" class="img-fluid" alt="">
+        	</div>
+        	<div class="details position-relative">
+            <div class="icon">
+                <i class="bi bi-easel"></i>
             </div>
-          </div><!-- End Service Item -->
+            <a href="{{ url_for('start_emotion_model') }}" class="stretched-link">
+                <h3>Emotion Detection Model</h3>
+            </a>
+            <p>Real-time emotion detection using advanced deep learning models. Analyze facial expressions to detect emotions accurately.</p>
+        	</div>
+    		</div>
+	  </div><!-- End Service Item -->
+
 
           <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="500">
             <div class="service-item">

@@ -33,6 +33,9 @@ def detect_action(landmarks):
         left_hip = pose[mp_holistic.PoseLandmark.LEFT_HIP]
         left_knee = pose[mp_holistic.PoseLandmark.LEFT_KNEE]
         left_ankle = pose[mp_holistic.PoseLandmark.LEFT_ANKLE]
+        nose = pose[mp_holistic.PoseLandmark.NOSE]
+        right_foot = pose[mp_holistic.PoseLandmark.RIGHT_FOOT_INDEX]
+        left_foot = pose[mp_holistic.PoseLandmark.LEFT_FOOT_INDEX]
 
         def calculate_angle(a, b, c):
             a = np.array([a.x, a.y])
@@ -43,14 +46,31 @@ def detect_action(landmarks):
 
         knee_angle = calculate_angle(left_hip, left_knee, left_ankle)
 
+        # Detect Standing or Sitting
         if knee_angle > 160:
             return "Standing"
         elif knee_angle < 90:
             return "Sitting"
-        if pose[mp_holistic.PoseLandmark.NOSE].y > left_hip.y:
+
+        # Detect Falling
+        if nose.y > left_hip.y:
             return "Falling"
+
+        # Detect Jumping (feet off the ground)
+        if right_foot.y < left_hip.y and left_foot.y < left_hip.y:
+            return "Jumping"
+
+        # Detect Running (arm-leg coordination)
+        if left_knee.y < left_hip.y and nose.y < left_hip.y:
+            return "Running"
+
+        # Detect Dancing (Wide stances or rhythmic movement)
+        if abs(left_hip.x - left_foot.x) > 0.1 and abs(left_hip.y - left_knee.y) > 0.1:
+            return "Dancing"
+
     return "No Action"
 
+# Detect Hand Gestures
 def detect_hand_gesture(hand_landmarks):
     if not hand_landmarks:
         return "No Gesture"
