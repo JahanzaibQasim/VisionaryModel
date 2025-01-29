@@ -35,7 +35,7 @@ E:\PYTHON\VisionaryModel\VisionaryModel
 Ensure you have the **complete project structure** on your local machine.
 
 ### Step 2: Install Python (if not installed)
-- Install Python **3.10** or higher.
+- Install Python **3.10**.(higher version may causes error)
 - Add Python to **system PATH** during installation.
 
 ### Step 3: Install Virtual Environments & Dependencies
